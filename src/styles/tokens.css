@@ -1,0 +1,71 @@
+/* TitleLab Design Tokens —— 唯一颜色/字号/间距/动效出口。
+   组件一律引用 var(--…)，禁止在本文件外新增色值。 */
+:root {
+  /* A1-identity：暖纸 + 墨绿 */
+  --bg: #F6F1E6;
+  --bg-deep: #EFE8D7;
+  --surface: #FFFDF6;
+  --fg: #1F2A23;
+  --accent: #1D5C3F;
+  --accent-strong: #14452E;
+  --accent-soft: #E4EDE1;
+  --border: #E0D7C2;
+
+  /* B-slot */
+  --fg-2: #46534A;
+  --muted: #6A7365;
+  --meta: #9AA08E;
+  --surface-warm: #F1EBDA;
+  --border-soft: #EBE3D0;
+  --accent-on: #FFFDF6;
+
+  /* A2 语义色（暖调，非默认饱和红绿） */
+  --success: #2E7D4F;
+  --warn: #A8761F;
+  --danger: #B3492F;
+  --info: #3A6B8C;
+
+  /* C-extension：评分色带 */
+  --score-viral: #1D5C3F;
+  --score-good: #56753B;
+  --score-mid: #A8761F;
+  --score-low: #B3492F;
+  --score-track: #EDE5D2;
+
+  /* 字体（本地楷体栈，零下载） */
+  --font-display: "LXGW WenKai Screen", "Kaiti SC", "KaiTi", "STKaiti", serif;
+  --font-body: "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "SFMono-Regular", Menlo, monospace;
+
+  /* 字号 */
+  --text-xs: 12px; --text-sm: 13px; --text-base: 14px; --text-md: 16px;
+  --text-lg: 18px; --text-xl: 20px; --text-2xl: 24px; --text-3xl: 32px;
+  --text-score: clamp(56px, 12vw, 80px);
+  --leading-body: 1.6; --leading-tight: 1.25;
+  --tracking-display: -0.01em;
+
+  /* 间距（4px 网格） */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px;
+
+  /* 圆角 */
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+  --radius-xl: 20px; --radius-full: 9999px;
+
+  /* 暖调阴影 */
+  --shadow-xs: 0 1px 2px rgba(72,60,32,0.05);
+  --shadow-sm: 0 1px 3px rgba(72,60,32,0.06), 0 1px 2px rgba(72,60,32,0.04);
+  --shadow-md: 0 2px 6px rgba(72,60,32,0.06), 0 8px 20px rgba(72,60,32,0.06);
+  --shadow-lg: 0 4px 10px rgba(72,60,32,0.07), 0 16px 36px rgba(72,60,32,0.09);
+  --elev-ring: 0 0 0 1px var(--border);
+
+  /* 动效 */
+  --motion-fast: 150ms; --motion-base: 200ms; --motion-slow: 250ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --focus-ring: 0 0 0 3px rgba(29,92,63,0.28);
+
+  /* 布局 */
+  --container-max: 1080px; --container-tight: 720px;
+  --gutter: 20px; --section-y-desktop: 80px; --section-y-mobile: 48px;
+}
