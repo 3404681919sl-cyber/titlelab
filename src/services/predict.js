@@ -95,8 +95,13 @@ export function analyze(model, rawText, category) {
   const input = model.prepareInput(rawText);
   const text = input.text;
   const { p } = model.scoreProb(input);
-  const score = clamp(p, 0, 1) * 100;
   const d = computeDimensions(text, category);
+  const score = clamp(p, 0, 1) * 100;
+
+  // 双子分校准：规则子分与模型分 50/50 融合，保证与总评同量级（纯规则子分会与 ML 总分严重脱节）
+  const mlScore = score;
+  const openScore = clamp(d.openScore * 0.5 + mlScore * 0.5);
+  const searchScore = clamp(d.searchScore * 0.5 + mlScore * 0.5);
 
   // 特征归因（LR 可解释）
   const z = input.dense;
@@ -115,7 +120,7 @@ export function analyze(model, rawText, category) {
 
   return {
     score, grade: gradeOf(score), prob: p,
-    openScore: d.openScore, searchScore: d.searchScore,
+    openScore, searchScore,
     percentile: percentileOf(model, category, p),
     dimensions: d.dimensions, strengths: d.strengthTexts, violations: d.violations,
     attribution: { pos, neg, terms: terms.slice(0, 5) },
