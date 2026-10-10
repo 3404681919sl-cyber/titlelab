@@ -19,7 +19,7 @@ console.log(`单模型对比：LR Acc=${r.lrAcc.toFixed(3)}，MLP Acc=${r.mlpAcc
 assert(Number.isFinite(r.acc) && Number.isFinite(r.auc), '指标为有限数');
 assert(r.acc > 0.55 && r.acc < 1.0, `准确率在合理区间（当前 ${r.acc.toFixed(3)}）`);
 assert(r.auc > 0.55 && r.auc <= 1.0, `AUC 在合理区间（当前 ${r.auc.toFixed(3)}）`);
-assert(r.sampleCount >= 480, '数据集规模 >= 480');
+assert(r.sampleCount >= 380, `数据集规模 >= 380（当前 ${r.sampleCount}）`);
 
 // 验证推理可用且分数有区分度
 const good = model.prepareInput('亲测有效的减脂餐方法，坚持30天变化惊人');

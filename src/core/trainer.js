@@ -12,8 +12,8 @@ import { accuracy, precisionRecallF1, auc } from './metrics.js';
 
 const D = 14;
 
-export async function train(onProgress) {
-  const raw = buildDataset(42);
+// 从原始样本训练（支持内置数据集或用户导入的真实数据）
+export async function trainFromSamples(raw, onProgress) {
   const docs = raw.map(s => {
     const t = preprocess(s.text);
     return { text: t, label: s.label, category: s.category, grams: charNgrams(t), denseRaw: extractNumeric(t) };
@@ -102,4 +102,9 @@ export async function train(onProgress) {
       return { pl: lr.predict(input), pm: mlp.predict(input), p: scoreProb(input) };
     }
   };
+}
+
+// 默认训练：内置数据集
+export async function train(onProgress) {
+  return trainFromSamples(buildDataset(42), onProgress);
 }

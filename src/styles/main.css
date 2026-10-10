@@ -200,6 +200,10 @@ details[open] .panel-summary .chevron { transform: rotate(180deg); }
 .weight-fill.pos { background: var(--success); }
 .weight-fill.neg { background: var(--danger); }
 .disclaimer { font-size: var(--text-xs); color: var(--muted); margin-top: var(--space-6); background: var(--surface-warm); border-left: 3px solid var(--warn); padding: var(--space-3) var(--space-4); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.import-desc { font-size: var(--text-xs); color: var(--muted); margin: var(--space-2) 0 var(--space-3); }
+.import-input { font-size: var(--text-sm); color: var(--fg-2); background: var(--bg); border: 1px dashed var(--border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); width: 100%; cursor: pointer; }
+.import-input:hover { border-color: var(--accent); }
+.import-status { font-size: var(--text-xs); color: var(--accent); margin-top: var(--space-2); min-height: 1em; }
 
 /* ---------- 定价 ---------- */
 .pricing { background: var(--bg-deep); padding: var(--section-y-mobile) 0; margin-top: var(--space-16); }

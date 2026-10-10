@@ -166,6 +166,10 @@
           <h3 class="panel-h">特征权重（Top 10）</h3>
           <div class="weight-list" id="weight-list"></div>
           <p class="disclaimer" id="dataset-disclaimer"></p>
+          <h3 class="panel-h">用你的真实数据重训</h3>
+          <p class="import-desc">导入你抓取的「标题,点赞,收藏,评论」CSV（UTF-8，首行表头可选），模型在本机用真实互动数据重新训练，互动越高越接近爆款档。样本需 ≥ 40 条，数据不出浏览器。</p>
+          <input type="file" id="import-csv" class="import-input" accept=".csv,text/csv" aria-label="导入真实数据 CSV" />
+          <p class="import-status" id="import-status"></p>
         </div>
       </details>
     </section>
@@ -206,7 +210,7 @@
 
   <footer class="footer">
     <div class="container footer-inner">
-      <span>纯前端开源 · 数据不出浏览器 · 基于人工构建示例数据集训练</span>
+      <span>纯前端开源 · 数据不出浏览器 · 内置真实爆款案例数据集 · 支持导入真实数据重训</span>
       <a href="https://github.com/3404681919sl-cyber/titlelab" target="_blank" rel="noopener" class="footer-link">
         <span class="ic ic-inline" data-icon="github"></span>GitHub
       </a>

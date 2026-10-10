@@ -1,5 +1,5 @@
 // controller.js —— 应用入口：状态机 + 事件绑定 + 渲染。
-import { train } from '../core/trainer.js';
+import { train, trainFromSamples } from '../core/trainer.js';
 import { displayLength } from '../core/preprocess.js';
 import { FEATURE_NAMES } from '../core/numeric-features.js';
 import { analyze, analyzeRule } from '../services/predict.js';
@@ -14,11 +14,11 @@ const ic = (n, cls = '') => `<span class="ic ${cls}">${iconMarkup(n)}</span>`;
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const EXAMPLES = [
-  '月薪5k也能抄的12套通勤穿搭，第7套绝了',
-  '亲测有效的减脂餐，坚持30天变化惊人',
-  '千万别乱买空气炸锅！这5个坑我替你踩了',
-  '大学生必看：考研英语80+的背单词方法',
-  '上海虹桥到外滩最快地铁换乘路线实测'
+  '5个让你越睡越累的坏习惯，第3个你肯定中招',
+  '黄黑皮天菜！这只橘棕色口红真的巨显白',
+  '租房千万别踩这8个坑，都是血泪教训',
+  '打工人下班做这3件事，半年后拉开差距',
+  '谁懂啊！这招让家里多出了10平米，房东看了都沉默'
 ];
 
 const SCORE_COLORS = { viral: 'var(--score-viral)', good: 'var(--score-good)', mid: 'var(--score-mid)', low: 'var(--score-low)' };
@@ -57,6 +57,75 @@ async function startTraining() {
     $('dataset-disclaimer').textContent = '模型不可用，当前为规则降级评分。' + DATASET_DISCLAIMER;
   }
   updateAnalyzeState();
+}
+
+/* ---------- 真实数据导入重训 ---------- */
+function parseCSV(text) {
+  const rows = [];
+  let row = [], cur = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else inQ = false; }
+      else cur += ch;
+    } else if (ch === '"') inQ = true;
+    else if (ch === ',') { row.push(cur); cur = ''; }
+    else if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cur); cur = '';
+      if (row.some(c => c.trim() !== '')) rows.push(row);
+      row = [];
+    } else cur += ch;
+  }
+  row.push(cur);
+  if (row.some(c => c.trim() !== '')) rows.push(row);
+  return rows;
+}
+
+async function importCSV(file) {
+  const status = $('import-status');
+  try {
+    const text = await file.text();
+    const rows = parseCSV(text);
+    if (!rows.length) throw new Error('CSV 为空');
+    const start = /标题|title/i.test(rows[0].join(',')) ? 1 : 0; // 首行含"标题"视为表头
+    const num = (v) => { const n = parseFloat(String(v ?? '').replace(/[^\d.-]/g, '')); return Number.isFinite(n) ? n : 0; };
+    const items = [];
+    const seen = new Set();
+    for (let i = start; i < rows.length; i++) {
+      const title = (rows[i][0] || '').trim();
+      if (!title || seen.has(title)) continue;
+      seen.add(title);
+      const like = num(rows[i][1]), fav = num(rows[i][2]), com = num(rows[i][3]);
+      items.push({ text: title, e: like + 2 * fav + 3 * com });
+    }
+    if (items.length < 40) { status.textContent = `有效样本 ${items.length} 条，不足 40 条，请先导出更多数据`; return; }
+    const es = items.map(x => x.e).sort((a, b) => a - b);
+    const median = es[Math.floor(es.length / 2)];
+    if (median <= 0) throw new Error('互动数据全为 0，无法按互动分档，请检查点赞/收藏/评论列');
+    const raw = items.map(x => ({ text: x.text, label: x.e >= median ? 1 : 0, category: state.category }));
+    const posCount = raw.filter(x => x.label === 1).length;
+    status.textContent = `已加载 ${raw.length} 条真实样本，正在本机重训…`;
+    $('train-bar').hidden = false;
+    const t0 = performance.now();
+    state.model = await trainFromSamples(raw, (p) => {
+      $('train-text').textContent = p.text;
+      $('train-pct').textContent = Math.round(p.pct * 100) + '%';
+      $('train-fill').style.width = (p.pct * 100) + '%';
+    });
+    state.degraded = false;
+    const secs = ((performance.now() - t0) / 1000).toFixed(1);
+    setBadge('ready', `已用真实数据重训 · ${raw.length}条`);
+    renderTransparency(secs);
+    $('dataset-disclaimer').textContent =
+      `当前模型由你导入的 ${raw.length} 条真实互动数据训练（爆款档 ${posCount} 条）。互动口径：点赞 + 2×收藏 + 3×评论，按中位数分档；数据只在本机处理。评分仅为概率参考，不构成爆款保证。`;
+    $('train-bar').hidden = true;
+    status.textContent = `重训完成：${raw.length} 条真实样本（爆款档 ${posCount} 条），耗时 ${secs}s`;
+    toast('真实数据重训完成');
+  } catch (err) {
+    console.error('[TitleLab] CSV 导入失败：', err);
+    status.textContent = '导入失败：' + err.message;
+  }
 }
 
 function setBadge(stateName, text) {
@@ -338,6 +407,7 @@ function bind() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
   $('free-cta').addEventListener('click', () => $('input').scrollIntoView({ behavior: 'smooth' }));
   $('pro-cta').addEventListener('click', () => toast('Pro 为商业化规划，Demo 全功能免费体验'));
+  $('import-csv').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) importCSV(f); e.target.value = ''; });
 
   document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
