@@ -1,6 +1,6 @@
 // rewrite.js —— 规则引擎改写：基于 2026 已发表爆款公式（数字盘点/痛点避坑/身份代入/悬念反差/数据实证）。
 // 公式来源：公开标题方法论文章（拆解 3000 篇 10w+ 笔记总结的 9 种结构）。
-import { SUSPENSE_WORDS, EMOTION_WORDS, VIOLATIONS, HOTWORDS, PERSONA_WORDS, STOPWORDS } from '../data/lexicon.js';
+import { SUSPENSE_WORDS, EMOTION_WORDS, VIOLATIONS, MARKETING_WORDS, CLICKBAIT_WORDS, HOTWORDS, PERSONA_WORDS, STOPWORDS } from '../data/lexicon.js';
 
 const STRATEGIES = [
   { key: 'number', label: '数字盘点', note: '＋具体数字（奇数更优），利益点前置', build: (topic, r) => `${r(3, 30)}个${topic}技巧，新手第3天就见效` },
@@ -16,7 +16,7 @@ function extractTopic(text, category) {
   const hot = HOTWORDS[category] || HOTWORDS['通用'];
   for (const w of hot) if (text.includes(w)) return w;
   let core = text;
-  const all = [...SUSPENSE_WORDS, ...EMOTION_WORDS, ...VIOLATIONS];
+  const all = [...SUSPENSE_WORDS, ...EMOTION_WORDS, ...VIOLATIONS, ...MARKETING_WORDS, ...CLICKBAIT_WORDS];
   for (const w of all) core = core.replaceAll(w, '');
   core = core.replace(/[\d\s｜|，,。.！!？?：:【】「」…~～-]/g, '');
   for (const ch of STOPWORDS) core = core.replaceAll(ch, '');

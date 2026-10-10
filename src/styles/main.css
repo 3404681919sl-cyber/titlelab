@@ -140,6 +140,7 @@ button { font-family: inherit; }
 .title-replay { font-family: var(--font-display); font-size: var(--text-lg); line-height: 1.8; margin-bottom: var(--space-5); padding: var(--space-4) var(--space-5); background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); }
 .title-replay mark { background: var(--accent-soft); color: var(--accent-strong); border-radius: 3px; padding: 0 2px; }
 .title-replay mark.vio { background: #F3D9CF; color: var(--danger); }
+.title-replay mark.mkt { background: #F3E2C4; color: var(--warn); }
 .dims { display: flex; flex-direction: column; gap: var(--space-3); }
 .dim { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); transition: background var(--motion-fast) var(--ease-out); }
 .dim:hover { background: var(--surface-warm); }
@@ -204,6 +205,17 @@ details[open] .panel-summary .chevron { transform: rotate(180deg); }
 .import-input { font-size: var(--text-sm); color: var(--fg-2); background: var(--bg); border: 1px dashed var(--border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); width: 100%; cursor: pointer; }
 .import-input:hover { border-color: var(--accent); }
 .import-status { font-size: var(--text-xs); color: var(--accent); margin-top: var(--space-2); min-height: 1em; }
+
+/* ---------- 诚实提示 & 发布建议 ---------- */
+.honesty-note { margin: var(--space-5) 0 0; padding-top: var(--space-4); border-top: 1px dashed var(--border); font-size: var(--text-xs); color: var(--meta); line-height: 1.6; }
+.suggestions { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+@media (min-width: 720px) { .suggestions { grid-template-columns: 1fr 1fr; } }
+.suggestion { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); }
+.suggestion-title { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-weight: 600; font-size: var(--text-md); margin-bottom: var(--space-2); }
+.suggestion-title .ic { color: var(--accent); }
+.suggestion.warn .suggestion-title .ic { color: var(--danger); }
+.suggestion.warn { border-color: var(--danger); background: #FBF3EE; }
+.suggestion-text { font-size: var(--text-sm); color: var(--fg-2); margin: 0; line-height: 1.6; }
 
 /* ---------- 定价 ---------- */
 .pricing { background: var(--bg-deep); padding: var(--section-y-mobile) 0; margin-top: var(--space-16); }

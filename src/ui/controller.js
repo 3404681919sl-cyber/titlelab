@@ -182,8 +182,20 @@ function renderResult(res) {
   $('strengths').innerHTML = res.strengths.map(s => `<div class="strength">${ic('check-circle')}${esc(s)}</div>`).join('');
   $('result-note').textContent = res.degraded
     ? '当前为规则降级评分（模型未就绪）'
-    : (res.violations.length ? `命中 ${res.violations.length} 个违禁词，基础检测供参考，发布前建议专业工具复核` : '基于本地模型预测，概率参考');
+    : (res.adFlag
+      ? `疑似广告投流/软文：命中 ${res.marketingHits.length} 个营销话术，新号易被当广告划走`
+      : (res.violations.length ? `命中 ${res.violations.length} 个违禁词，基础检测供参考，发布前建议专业工具复核` : '基于本地模型预测，概率参考'));
   show($('result'));
+}
+
+function renderSuggestions(res) {
+  const list = res.suggestions || [];
+  $('suggestions-list').innerHTML = list.map(s => `
+    <div class="suggestion ${s.icon === 'alert-note' ? 'warn' : ''}">
+      <div class="suggestion-title">${ic(s.icon)}${esc(s.title)}</div>
+      <p class="suggestion-text">${esc(s.text)}</p>
+    </div>`).join('');
+  show($('suggestions'));
 }
 
 function renderDimensions(res) {
@@ -217,7 +229,9 @@ function highlightHTML(highlights) {
   let out = '', pos = 0;
   for (const r of merged) {
     out += esc(src.slice(pos, r.s));
-    out += r.type === 'violation' ? `<mark class="vio">${esc(src.slice(r.s, r.e))}</mark>` : `<mark>${esc(src.slice(r.s, r.e))}</mark>`;
+    if (r.type === 'violation') out += `<mark class="vio">${esc(src.slice(r.s, r.e))}</mark>`;
+    else if (r.type === 'marketing') out += `<mark class="mkt">${esc(src.slice(r.s, r.e))}</mark>`;
+    else out += `<mark>${esc(src.slice(r.s, r.e))}</mark>`;
     pos = r.e;
   }
   out += esc(src.slice(pos));
@@ -279,6 +293,7 @@ function runAnalyze() {
   state.lastResult = res;
   renderResult(res);
   renderDimensions(res);
+  renderSuggestions(res);
   state.compareVariant = null;
   $('ab').hidden = true;
   $('variants').hidden = true;
